@@ -10,9 +10,37 @@ function saveResponseInRealTime(event) {
 }
 
 function getHighestScoreDescription(scores, textMapping) {
+    // Validate inputs
+    if (!scores || typeof scores !== "object" || Object.keys(scores).length === 0) {
+        console.error("Invalid scores object!");
+        return "Descrição não disponível";
+    }
+    if (!textMapping || typeof textMapping !== "object") {
+        console.error("Invalid textMapping object!");
+        return "Descrição não disponível";
+    }
+
+    // Find the highest score key
     const highestKey = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-    return textMapping[highestKey]?.high || "Descrição não disponível";
+
+    // Retrieve user data from localStorage
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData || !userData.name) {
+        console.error("User data not found in localStorage!");
+        return "Descrição não disponível";
+    }
+
+    // Get the description from textMapping
+    const description = textMapping[highestKey]?.high;
+    if (!description) {
+        console.error(`Description not found for key: ${highestKey}`);
+        return "Descrição não disponível";
+    }
+
+    // Combine user name and description
+    return `${userData.name} ${description}`;
 }
+
 
 function determineUserProfile(scores) {
     return Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
@@ -42,4 +70,41 @@ function determineWorkEnvironment(scores, workEnvironmentTexts) {
     }).filter(Boolean); // Filter out null or undefined values
 }
 
-export { validateEmail, saveResponseInRealTime, getHighestScoreDescription, determineUserProfile, getDevelopmentSuggestions, determineWorkEnvironment };
+function getPredominantProfiles(scores) {
+    // Array com as dimensões e seus respectivos valores
+    const dimensions = [
+        { label: "Dominância", letter: "D", value: scores["D"] },
+        { label: "Influência", letter: "I", value: scores["I"] },
+        { label: "Estabilidade", letter: "S", value: scores["S"] },
+        { label: "Conformidade", letter: "C", value: scores["C"] },
+    ];
+
+    // Ordenar as dimensões por valor (decrescente)
+    dimensions.sort((a, b) => b.value - a.value);
+
+    // Retornar as dimensões predominantes
+    if (dimensions[0].value - dimensions[1].value > 20) {
+        return dimensions.slice(0, 1); // Apenas o perfil predominante
+    } else {
+        return dimensions.slice(0, 2); // Dois perfis predominantes
+    }
+}
+
+function generateDynamicTitle(predominantProfiles) {
+    const profileLetters = predominantProfiles.map(profile => profile.letter).join("");
+    const profileDescriptions = predominantProfiles.map(profile => profile.label).join(" e ");
+
+    return `${profileDescriptions} (${profileLetters})`;
+}
+
+
+
+export {validateEmail,
+        saveResponseInRealTime,
+        getHighestScoreDescription,
+        determineUserProfile,
+        getDevelopmentSuggestions,
+        determineWorkEnvironment,
+        getPredominantProfiles,
+        generateDynamicTitle
+        };

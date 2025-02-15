@@ -9,9 +9,11 @@ body {
 
 /* Header */
 header {
+    position: fixed;
+    top: 0;
     background-color: #003366;
     color: #FFFFFF;
-    padding: 20px;
+    padding: 5px;
     text-align: center;
     font-size: 24px;
     width: 100%;
@@ -24,10 +26,29 @@ header > h1 {
     font-size: 1.5em;
 }
 
+#read_more_text {
+    display: none;
+}
+
+#read_less_btn {
+    display: none;
+}
+
+#intro article {
+    position:relative;
+    margin: 0 auto 40px;
+}
+
+#read_more_btn, #read_less_btn {
+    position: absolute;
+    bottom: -30px;
+    right: 20px;
+}
+
 /* Containers */
 .container {
     max-width: 800px;
-    margin: 20px auto;
+    margin: 130px auto 20px;
     padding: 20px;
     background-color: #FFFFFF;
     border-radius: 8px;
@@ -49,10 +70,7 @@ header > h1 {
     position: relative;
 }
 
-#infoPageButtons > button:last-child {
-    position: absolute;
-    right: 10px;
-    top: 1.1em;
+.secondary_btn {
     border: 1px solid #6699CC;
     background-color: white;
     font-size: 0.8em;
@@ -61,7 +79,13 @@ header > h1 {
     margin: auto 0;
 }
 
-#infoPageButtons > button:last-child:hover {
+.reset_ls {
+    position: absolute;
+    right: 10px;
+    top: 1.1em;
+}
+
+.secondary_btn:hover {
     background-color: #6699CC;
     color: white;
 }
@@ -150,6 +174,7 @@ label {
 #report-title {
     display: inline-block;
     margin: 0;
+    font-size: 1.2em;
 }
 
 #downloadButtons {
@@ -212,10 +237,28 @@ button.hidden {
     pointer-events: none; /* Prevents clicks */
 }
 
+#report button a {
+    /* Reset default styles */
+    all: unset; /* Resets all styles (most efficient way) */
+    /* Add custom styles if needed */
+    display: inline-block; /* Makes it behave like a block or button */
+    text-decoration: none; /* Removes underline if not reset by `unset` */
+    color: inherit; /* Matches the color of the parent element */
+    padding: 0; /* Ensures no extra space */
+    margin: 0; /* Ensures no extra margin */
+    font-size: inherit; /* Inherits the font size from the parent button */
+    cursor: pointer; /* Ensures the cursor indicates interactivity */
+}
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .chart-wrapper {
         width: 90%; /* Full width on small screens */
+    }
+
+    .container {
+        margin: 100px auto 20px;
     }
 
     header > h1 {

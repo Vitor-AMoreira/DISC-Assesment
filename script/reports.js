@@ -1,6 +1,6 @@
 // reports.js
 import { createChart, destroyAllCharts, createComparisonChart } from "./charts.js";
-import { getHighestScoreDescription, determineUserProfile, getDevelopmentSuggestions, determineWorkEnvironment } from './utils.js'
+import { getHighestScoreDescription, determineUserProfile, getDevelopmentSuggestions, determineWorkEnvironment, generateDynamicTitle, getPredominantProfiles } from './utils.js'
 import { workEnvironmentTexts, motivatorsByDimension, demotivatorsByDimension } from './constants.js'
 import { submitForm } from './cloud_function.js'
 import { downloadPdf, downloadExcel } from './download.js'
@@ -8,20 +8,31 @@ import { downloadPdf, downloadExcel } from './download.js'
 async function generateReport(natural_scores, adaptado_scores) {
     destroyAllCharts();
 
-    if(!natural_scores) {
-        console.log("natural_scores not passed as parameter!")
+    if (!natural_scores) {
+        console.log("natural_scores not passed as parameter!");
         return;
     }
 
     const userData = JSON.parse(localStorage.getItem("userData"));
 
-    if(!userData || !userData.name) {
+    if (!userData || !userData.name) {
         console.log("UserData not found in local storage!");
-        localStorage.setItem("page","0");
+        localStorage.setItem("page", "0");
         location.reload();
         return;
     }
 
+    
+    // Identificar os perfis predominantes
+    const predominantProfiles = getPredominantProfiles(natural_scores);
+    
+    // Gerar o título dinâmico
+    const dynamicTitle = generateDynamicTitle(predominantProfiles);
+    
+    // Atualizar o título no relatório
+    // document.getElementById("report-title").innerText = ;
+
+    document.getElementById("predominantProfile").innerText = dynamicTitle;
     document.getElementById("userName").innerText = userData.name;
     document.getElementById("userSurname").innerText = userData.surname;
     document.getElementById("userEmail").innerText = userData.email;
@@ -29,8 +40,8 @@ async function generateReport(natural_scores, adaptado_scores) {
 
     createChart("naturalChart", "Comportamento Natural", natural_scores);
     createChart("adaptedChart", "Comportamento Adaptado", adaptado_scores);
-    createComparisonChart("comparisonChart", natural_scores, adaptado_scores)
-    
+    createComparisonChart("comparisonChart", natural_scores, adaptado_scores);
+
     const workEnvironment = getHighestScoreDescription(natural_scores, workEnvironmentTexts);
     document.getElementById("profileSummary").innerText = workEnvironment;
 
@@ -49,13 +60,14 @@ async function generateReport(natural_scores, adaptado_scores) {
 
     await submitForm(natural_scores, adaptado_scores);
 
-    const downloadPdfButton = document.getElementById("downloadPdfBtn")
+    const downloadPdfButton = document.getElementById("downloadPdfBtn");
     downloadPdfButton.addEventListener("click", downloadPdf);
-    downloadPdfButton.removeAttribute("disabled")
+    downloadPdfButton.removeAttribute("disabled");
 
-    const downloadExcelButton = document.getElementById("downloadExcelBtn")
+    const downloadExcelButton = document.getElementById("downloadExcelBtn");
     downloadExcelButton.addEventListener("click", () => downloadExcel(natural_scores, adaptado_scores));
-    downloadExcelButton.removeAttribute("disabled")
+    downloadExcelButton.removeAttribute("disabled");
 }
+
 
 export { generateReport };

@@ -9,6 +9,8 @@ window.onload = () => {
         document.getElementById('intro').style.display = 'block';
         document.getElementById('assessmentContainer').style.display = 'none';
         document.getElementById('report').style.display = 'none';
+        document.getElementById('read_less_btn').style.display = 'none';
+        document.getElementById('read_more_text').style.display = 'none';
         loadUserDataIntoForm();
         
     } else if (localStorage.getItem('page') === "1") {
@@ -36,6 +38,20 @@ window.onload = () => {
         window.scrollTo(0, 0);
     });
 };
+
+document.querySelectorAll('.secondary_btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+        const showMore = btn.id === 'read_more_btn';
+
+        // Toggle button visibility
+        document.getElementById('read_more_btn').style.display = showMore ? 'none' : 'block';
+        document.getElementById('read_less_btn').style.display = showMore ? 'block' : 'none';
+
+        // Toggle content visibility
+        document.getElementById('read_more_text').style.display = showMore ? 'block' : 'none';
+        document.getElementById('instructions').style.display = showMore ? 'none' : 'block';
+    });
+});
 
 // Event listener for navigation back to user info page
 document.getElementById("goToUserInfoPage").addEventListener("click", () => {
